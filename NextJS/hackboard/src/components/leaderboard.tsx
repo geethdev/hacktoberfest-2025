@@ -257,6 +257,8 @@ export default function Leaderboard() {
     const [error, setError] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [minMergedPRs, setMinMergedPRs] = useState<number>(0);
+    const [sortKey, setSortKey] = useState<"mergedPRs" | "totalPRs" | "commits" | "additions" | "deletions">("mergedPRs");
+    const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
 
     useEffect(() => {
         const fetchContributors = async () => {
@@ -314,6 +316,14 @@ export default function Leaderboard() {
         return matchesQuery && meetsMinMerged;
     });
 
+    const sortedContributors = [...filteredContributors].sort((a, b) => {
+        const dir = sortOrder === "asc" ? 1 : -1;
+        const av = a[sortKey];
+        const bv = b[sortKey];
+        if (av === bv) return 0;
+        return av > bv ? dir : -dir;
+    });
+
     // Calculate statistics
     const totalContributors = contributors.length;
     const totalMergedPRs = contributors.reduce((sum, c) => sum + c.mergedPRs, 0);
@@ -323,8 +333,8 @@ export default function Leaderboard() {
     const averageMergedPRs = totalContributors > 0 ? (totalMergedPRs / totalContributors).toFixed(1) : '0';
     const topContributor = contributors.length > 0 ? contributors[0] : null;
 
-    const topThree = filteredContributors.slice(0, 3);
-    const others = filteredContributors.slice(3);
+    const topThree = sortedContributors.slice(0, 3);
+    const others = sortedContributors.slice(3);
 
     return (
         <div className="min-h-screen bg-background p-6">
@@ -346,7 +356,7 @@ export default function Leaderboard() {
 
                 {/* Filters */}
                 <div className="mb-12">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                         <div className="col-span-1">
                             <label className="block text-sm font-medium text-muted-foreground mb-1">Search by username</label>
                             <input
@@ -373,12 +383,39 @@ export default function Leaderboard() {
                                 <option value={6}>6</option>
                             </select>
                         </div>
+                        <div className="col-span-1">
+                            <label className="block text-sm font-medium text-muted-foreground mb-1">Sort by</label>
+                            <select
+                                value={sortKey}
+                                onChange={(e) => setSortKey(e.target.value as any)}
+                                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value="mergedPRs">Merged PRs</option>
+                                <option value="totalPRs">Total PRs</option>
+                                <option value="commits">Commits</option>
+                                <option value="additions">Additions</option>
+                                <option value="deletions">Deletions</option>
+                            </select>
+                        </div>
+                        <div className="col-span-1">
+                            <label className="block text-sm font-medium text-muted-foreground mb-1">Order</label>
+                            <select
+                                value={sortOrder}
+                                onChange={(e) => setSortOrder(e.target.value as any)}
+                                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value="desc">High → Low</option>
+                                <option value="asc">Low → High</option>
+                            </select>
+                        </div>
                         <div className="col-span-1 flex items-end">
                             <Button
                                 className="bg-blue-600 hover:bg-blue-700 text-white w-full"
                                 onClick={() => {
                                     setSearchQuery("");
                                     setMinMergedPRs(0);
+                                    setSortKey("mergedPRs");
+                                    setSortOrder("desc");
                                 }}
                             >
                                 Clear filters
