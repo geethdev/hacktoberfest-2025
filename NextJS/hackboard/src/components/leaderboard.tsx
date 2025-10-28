@@ -355,13 +355,13 @@ export default function Leaderboard() {
                                     <Table>
                                         <TableHeader>
                                             <TableRow className="hover:bg-transparent">
-                                                <TableHead className="w-16">Rank</TableHead>
-                                                <TableHead>Contributor</TableHead>
-                                                <TableHead className="text-center">Merged PRs</TableHead>
-                                                <TableHead className="text-center">Additions</TableHead>
-                                                <TableHead className="text-center">Deletions</TableHead>
-                                                <TableHead className="text-center">Commits</TableHead>
-                                                <TableHead className="text-center">Progress</TableHead>
+                                                <TableHead className="w-16 text-red-600 font-semibold">Rank</TableHead>
+                                                <TableHead className="text-red-600 font-semibold">Contributor</TableHead>
+                                                <TableHead className="text-center text-red-600 font-semibold">Merged PRs</TableHead>
+                                                <TableHead className="text-center text-red-600 font-semibold">Additions</TableHead>
+                                                <TableHead className="text-center text-red-600 font-semibold">Deletions</TableHead>
+                                                <TableHead className="text-center text-red-600 font-semibold">Commits</TableHead>
+                                                <TableHead className="text-center text-red-600 font-semibold">Progress</TableHead>
                                                 <TableHead className="w-16"></TableHead>
                                             </TableRow>
                                         </TableHeader>
