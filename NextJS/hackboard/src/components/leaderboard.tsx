@@ -255,6 +255,8 @@ export default function Leaderboard() {
     const [contributors, setContributors] = useState<Contributor[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [minMergedPRs, setMinMergedPRs] = useState<number>(0);
 
     useEffect(() => {
         const fetchContributors = async () => {
@@ -305,25 +307,75 @@ export default function Leaderboard() {
         );
     }
 
-    const topThree = contributors.slice(0, 3);
-    const others = contributors.slice(3);
+    const normalizedQuery = searchQuery.trim().toLowerCase();
+    const filteredContributors = contributors.filter((c) => {
+        const matchesQuery = normalizedQuery === "" || c.username.toLowerCase().includes(normalizedQuery);
+        const meetsMinMerged = c.mergedPRs >= minMergedPRs;
+        return matchesQuery && meetsMinMerged;
+    });
+
+    const topThree = filteredContributors.slice(0, 3);
+    const others = filteredContributors.slice(3);
 
     return (
         <div className="min-h-screen bg-background p-6">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
-                <div className="text-center mb-12">
+                <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold mb-4">
                         🏆 IEEE NSBM Hacktoberfest 2025 Leaderboard
                     </h1>
                     <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                         Celebrating the outstanding contributions from IEEE NSBM Student Branch members to open source projects during Hacktoberfest 2025.
                     </p>
-                    {contributors.length > 0 && (
+                    {filteredContributors.length > 0 && (
                         <p className="text-sm text-muted-foreground mt-2">
-                            Showing {contributors.length} contributor{contributors.length !== 1 ? 's' : ''} with Hacktoberfest PRs
+                            Showing {filteredContributors.length} contributor{filteredContributors.length !== 1 ? 's' : ''} with Hacktoberfest PRs
                         </p>
                     )}
+                </div>
+
+                {/* Filters */}
+                <div className="mb-12">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="col-span-1">
+                            <label className="block text-sm font-medium text-muted-foreground mb-1">Search by username</label>
+                            <input
+                                type="text"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="e.g. octocat"
+                                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
+                        <div className="col-span-1">
+                            <label className="block text-sm font-medium text-muted-foreground mb-1">Min merged PRs</label>
+                            <select
+                                value={minMergedPRs}
+                                onChange={(e) => setMinMergedPRs(Number(e.target.value))}
+                                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value={0}>0</option>
+                                <option value={1}>1</option>
+                                <option value={2}>2</option>
+                                <option value={3}>3</option>
+                                <option value={4}>4</option>
+                                <option value={5}>5</option>
+                                <option value={6}>6</option>
+                            </select>
+                        </div>
+                        <div className="col-span-1 flex items-end">
+                            <Button
+                                className="bg-blue-600 hover:bg-blue-700 text-white w-full"
+                                onClick={() => {
+                                    setSearchQuery("");
+                                    setMinMergedPRs(0);
+                                }}
+                            >
+                                Clear filters
+                            </Button>
+                        </div>
+                    </div>
                 </div>
 
                 {contributors.length === 0 ? (
