@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/table";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { Trophy, Medal, Award, ExternalLink, GitPullRequest, Clock, Code, Loader2, Users, TrendingUp, GitBranch, FileCode, Download } from "lucide-react";
+import { Trophy, Medal, Award, ExternalLink, GitPullRequest, Clock, Code, Loader2, Users, TrendingUp, GitBranch, FileCode, Download, Sun, Moon } from "lucide-react";
 
 interface Contributor {
     id: number;
@@ -259,6 +259,7 @@ export default function Leaderboard() {
     const [minMergedPRs, setMinMergedPRs] = useState<number>(0);
     const [sortKey, setSortKey] = useState<"mergedPRs" | "totalPRs" | "commits" | "additions" | "deletions">("mergedPRs");
     const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
+    const [theme, setTheme] = useState<"light" | "dark">("light");
 
     useEffect(() => {
         const fetchContributors = async () => {
@@ -283,6 +284,28 @@ export default function Leaderboard() {
 
         fetchContributors();
     }, []);
+
+    // Initialize theme from localStorage or system preference
+    useEffect(() => {
+        try {
+            const stored = localStorage.getItem("theme");
+            let initial: "light" | "dark" = "light";
+            if (stored === "light" || stored === "dark") {
+                initial = stored;
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                initial = "dark";
+            }
+            setTheme(initial);
+            document.documentElement.classList.toggle('dark', initial === 'dark');
+        } catch {}
+    }, []);
+
+    const toggleTheme = () => {
+        const next = theme === 'dark' ? 'light' : 'dark';
+        setTheme(next);
+        document.documentElement.classList.toggle('dark', next === 'dark');
+        try { localStorage.setItem('theme', next); } catch {}
+    };
 
     if (loading) {
         return (
@@ -392,6 +415,17 @@ export default function Leaderboard() {
                     <h1 className="text-4xl font-bold mb-4">
                         🏆 IEEE NSBM Hacktoberfest 2025 Leaderboard
                     </h1>
+                    <div className="flex items-center justify-center gap-3 mb-3">
+                        <Button
+                            variant="outline"
+                            onClick={toggleTheme}
+                            className="flex items-center gap-2"
+                            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+                        >
+                            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                            <span className="text-sm">{theme === 'dark' ? 'Light mode' : 'Dark mode'}</span>
+                        </Button>
+                    </div>
                     <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                         Celebrating the outstanding contributions from IEEE NSBM Student Branch members to open source projects during Hacktoberfest 2025.
                     </p>
