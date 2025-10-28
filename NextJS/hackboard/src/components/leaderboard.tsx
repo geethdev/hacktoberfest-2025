@@ -210,7 +210,7 @@ const PodiumCard = ({ contributor }: { contributor: Contributor }) => {
 
                 <Button
                     variant="link"
-                    className="p-0 h-auto font-bold text-lg"
+                    className="p-0 h-auto font-bold text-lg text-blue-600 hover:text-blue-700"
                     onClick={() => window.open(contributor.profileUrl, '_blank')}
                 >
                     @{contributor.username}
@@ -297,7 +297,7 @@ export default function Leaderboard() {
                 <div className="text-center">
                     <h2 className="text-2xl font-bold mb-4 text-destructive">Error Loading Data</h2>
                     <p className="text-muted-foreground mb-4">{error}</p>
-                    <Button onClick={() => window.location.reload()}>
+                    <Button onClick={() => window.location.reload()} className="bg-blue-600 hover:bg-blue-700 text-white">
                         Try Again
                     </Button>
                 </div>
@@ -387,7 +387,7 @@ export default function Leaderboard() {
                                                                 </Avatar>
                                                                 <Button
                                                                     variant="link"
-                                                                    className="p-0 h-auto font-medium"
+                                                                    className="p-0 h-auto font-medium text-blue-600 hover:text-blue-700"
                                                                     onClick={() => window.open(contributor.profileUrl, '_blank')}
                                                                 >
                                                                     @{contributor.username}
@@ -435,6 +435,7 @@ export default function Leaderboard() {
                                                             <Button
                                                                 variant="ghost"
                                                                 size="sm"
+                                                                className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                                                                 onClick={() => window.open(contributor.profileUrl, '_blank')}
                                                             >
                                                                 <ExternalLink className="h-4 w-4" />
